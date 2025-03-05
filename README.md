@@ -14,15 +14,27 @@ chmod +x network.sh
 ./network.sh <path_to_ovpn_file> <AD_network_IP>
 ```
 
-The script will output your active connections, one of which is the VPN you downloaded. Enter the connection name of the VPN, for example:
+The script will automatically find the active connection and add this DNS to its route:
 
 ```
-[i] Available Network Connections: 
+└─$ ./network.sh breachingad.ovpn 10.200.9.101
+[i] Checking sudo privileges...
 
-NAME                UUID                                  TYPE      DEVICE   
-Wired connection 1  da0d3c10-0411-4b35-ac3a-8e1dddab43a6  ethernet  eth1     
-breachad            e64ca63e-d042-40d7-b5a6-81d432db413f  tun       breachad 
-[?] Enter the connection name you want to configure: breachad
+[i] Starting the VPN interface using breachingad.ovpn.
+
+[i] Waiting for VPN interface to be assigned...
+
+[i] Detected VPN Connection Name: breachad
+[i] VPN assigned IP: 10.50.8.21
+[i] Configuring DNS for the connection 'breachad' with IP 10.200.9.101.
+
+Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/14)
+[i] Adding route via DNS IP (10.200.9.101) on interface breachad.
+[i] Testing connection for DNS config: 
+
+IP4.DNS[1]:                             10.200.9.101
+IP4.DNS[2]:                             1.1.1.1
+[!] Happy Hacking!
 ```
 
 And you should be up and running. To confirm it, run:
