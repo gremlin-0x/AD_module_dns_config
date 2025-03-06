@@ -22,14 +22,12 @@ if [ ! -f "$OVPN_FILE" ]; then
     exit 1
 fi
 
-# Get active connections BEFORE VPN starts
 ACTIVE_BEFORE=$(nmcli connection show --active | awk 'NR>1 {print $1}')
 
 echo -e "[i] Starting the VPN interface using $OVPN_FILE.\n"
 sudo nohup openvpn --config "$OVPN_FILE" > /dev/null 2>&1 &
 VPN_PID=$!
 
-# Wait for a new VPN interface to appear
 echo -e "[i] Waiting for VPN interface to be assigned...\n"
 MAX_WAIT=15
 WAIT_TIME=0
@@ -62,15 +60,20 @@ fi
 
 echo -e "[i] VPN assigned IP: $VPN_IP"
 
-echo -e "[i] Configuring DNS for the connection '$CONNECTION_NAME' with IP $DNS_IP.\n"
-sudo nmcli connection modify "$CONNECTION_NAME" ipv4.dns "$DNS_IP 1.1.1.1"
+echo -e "[i] Configuring DNS for the connection '$CONNECTION_NAME' with IP $DNS_IP."
+sudo nmcli connection modify "$CONNECTION_NAME" ipv4.dns "$DNS_IP 8.8.8.8"
 sudo nmcli connection modify "$CONNECTION_NAME" ipv4.ignore-auto-dns yes
 sudo nmcli connection up "$CONNECTION_NAME"
 
-echo -e "[i] Adding route via DNS IP ($DNS_IP) on interface $CONNECTION_NAME."
-sudo ip route add $DNS_IP dev $CONNECTION_NAME
+DNS_SUBNET="${DNS_IP%.*}.0/24"
 
-echo -e "[i] Testing connection for DNS config: \n"
+echo -e "[i] Adding subnet $DNS_SUBNET route via VPN IP ($VPN_IP) on interface $CONNECTION_NAME."
+sudo ip route add "$DNS_SUBNET" via "$VPN_IP" dev "$CONNECTION_NAME"
+
+echo -e "[!] Hardcoded DNS nameservers in /etc/resolv.conf."
+echo -e "nameserver $DNS_IP\nnameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+
+echo -e "[i] Testing connection for DNS config:"
 nmcli dev show "$CONNECTION_NAME" | grep DNS
 
 echo -e "[!] Happy Hacking!"
