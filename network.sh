@@ -11,7 +11,7 @@ if [ $# -ne 2 ]; then
     print_usage
 fi
 
-echo -e "[i] Checking sudo privileges...\n"
+echo -e "[i] Checking sudo privileges..."
 sudo -v || { echo "[!] Sudo privileges required. Exiting."; exit 1; }
 
 OVPN_FILE="$1"
@@ -24,11 +24,11 @@ fi
 
 ACTIVE_BEFORE=$(nmcli connection show --active | awk 'NR>1 {print $1}')
 
-echo -e "[i] Starting the VPN interface using $OVPN_FILE.\n"
+echo -e "[i] Starting the VPN interface using $OVPN_FILE."
 sudo nohup openvpn --config "$OVPN_FILE" > /dev/null 2>&1 &
 VPN_PID=$!
 
-echo -e "[i] Waiting for VPN interface to be assigned...\n"
+echo -e "[i] Waiting for VPN interface to be assigned..."
 MAX_WAIT=15
 WAIT_TIME=0
 
