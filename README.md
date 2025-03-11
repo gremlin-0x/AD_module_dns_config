@@ -19,21 +19,19 @@ The script will automatically find the active connection and add this DNS to its
 ```
 └─$ ./network.sh breachingad.ovpn 10.200.9.101
 [i] Checking sudo privileges...
-
 [i] Starting the VPN interface using breachingad.ovpn.
-
 [i] Waiting for VPN interface to be assigned...
-
 [i] Detected VPN Connection Name: breachad
 [i] VPN assigned IP: 10.50.8.21
 [i] Configuring DNS for the connection 'breachad' with IP 10.200.9.101.
-
 Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/14)
-[i] Adding route via DNS IP (10.200.9.101) on interface breachad.
+[i] Adding subnet 10.200.9.0/24 route via VPN IP (10.50.8.21) on interface lateralmovement.
+[!] Hardcoded DNS nameservers in /etc/resolv.conf.
+nameserver 10.200.9.101
+nameserver 8.8.8.8
 [i] Testing connection for DNS config: 
-
 IP4.DNS[1]:                             10.200.9.101
-IP4.DNS[2]:                             1.1.1.1
+IP4.DNS[2]:                             8.8.8.8
 [!] Happy Hacking!
 ```
 
